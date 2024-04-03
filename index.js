@@ -1,9 +1,12 @@
 import puppeteer from 'puppeteer';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import cliInput from './cli.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
 const args = process.argv.slice(2);
+
+const options = [];
 
 const courseUrl = 'https://vueschool.io/courses';
 
@@ -43,9 +46,11 @@ const getEachCourse = await page.$$eval('a.thumb-card', (el) => {
       .getAttribute('style')
       .match(regex);
     const thumbnail = findThumbnail ? findThumbnail[1] : '';
-    return { title, url, thumbnail };
+    return { title, url, thumbnail, checked: false };
   });
 });
 
-console.log(getEachCourse);
+options.push(...getEachCourse);
 await browser.close();
+
+cliInput(options);
