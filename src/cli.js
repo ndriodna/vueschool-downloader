@@ -2,30 +2,39 @@ import readline from "node:readline";
 import { clear } from "node:console";
 import { starLine, check } from "./helper/helper.js";
 
+function showOptions(option) {
+  let horizontal = "";
+  starLine();
+  console.log(
+    "Gunakan panah Atas/Bawah, Space untuk memilih, Enter simpan pilihan"
+  );
+  starLine();
+  option.forEach((option, i) => {
+    horizontal += `[${option.checked ? check() : " "}] ${option.title} || `;
+    if (i % 4 == 0 && i !== option.length - 1) {
+      horizontal += "\n";
+    }
+  });
+  console.log(horizontal);
+}
+
+function displayResult(selectedOptions, options) {
+  console.log("Pilihan Anda:");
+  selectedOptions.forEach((option, index) => {
+    console.log(`${index + 1}. ${options[option].title}`);
+  });
+}
+
+function clearScreen() {
+  clear();
+
+  readline.cursorTo(process.stdout, 0, 0);
+
+  readline.clearScreenDown(process.stdout);
+}
+
 export default function (options) {
   const selectedOptions = [];
-  function showOptions(option) {
-    let horizontal = "";
-    starLine();
-    console.log(
-      "Gunakan panah Atas/Bawah, Space untuk memilih, Enter simpan pilihan"
-    );
-    starLine();
-    option.forEach((option, i) => {
-      horizontal += `[${option.checked ? check() : " "}] ${option.title} || `;
-      if (i % 4 == 0 && i !== option.length - 1) {
-        horizontal += "\n";
-      }
-    });
-    console.log(horizontal);
-  }
-
-  function displayResult(selectedOptions) {
-    console.log("Pilihan Anda:");
-    selectedOptions.forEach((option, index) => {
-      console.log(`${index + 1}. ${options[option].title}`);
-    });
-  }
 
   showOptions(options);
 
@@ -53,7 +62,7 @@ export default function (options) {
 
         clearScreen();
         showOptions(options);
-        displayResult(selectedOptions);
+        displayResult(selectedOptions, options);
       } else if (key.name === "down") {
         console.log("index down", currentIndex);
         if (currentIndex >= 0) {
@@ -68,17 +77,17 @@ export default function (options) {
         }
         clearScreen();
         showOptions(options);
-        displayResult(selectedOptions);
+        displayResult(selectedOptions, options);
       } else if (key.name === "space") {
         if (!selectedOptions.includes(currentIndex)) {
           selectedOptions.push(currentIndex);
         }
         clearScreen();
         showOptions(options);
-        displayResult(selectedOptions);
+        displayResult(selectedOptions, options);
       } else if (key.name === "return") {
         clearScreen();
-        displayResult(selectedOptions);
+        displayResult(selectedOptions, options);
         // process.exit();
         process.stdin.pause();
         process.stdin.removeAllListeners("keypress");
@@ -86,12 +95,4 @@ export default function (options) {
       }
     });
   });
-}
-
-function clearScreen() {
-  clear();
-
-  readline.cursorTo(process.stdout, 0, 0);
-
-  readline.clearScreenDown(process.stdout);
 }
