@@ -2,6 +2,7 @@ import puppeteer from "puppeteer";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import cliInput from "./cli.js";
 import dotenv from "dotenv";
+import downloader from "./downloader/downloader.js";
 dotenv.config();
 
 const args = process.argv.slice(2);
@@ -89,7 +90,7 @@ async function getEachLesson(browser, courses, selected) {
   const selected = await cliInput(courses);
   const lesson = await getEachLesson(browser, courses, selected);
 
+  await downloader(lesson);
   await browser.close();
   console.log(lesson);
-  // downloader(e, courses);
 })();
