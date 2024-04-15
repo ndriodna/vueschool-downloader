@@ -83,8 +83,9 @@ async function getEachLesson(browser, courses, selected) {
 }
 
 async function getEachVideoLesson(browser, lessons) {
+  const videoLesson = [];
   for (let i = 0; i < lessons.length; i++) {
-    let videoUrls = [];
+    const videoUrls = [];
     for (let j = 0; j < lessons[i].urls.length; j++) {
       const page = await newPage(browser);
       console.log("waiting for scraping video from: ", lessons[i].urls[j]);
@@ -93,9 +94,11 @@ async function getEachVideoLesson(browser, lessons) {
       const video = await page.$eval("iframe", (e) => e.getAttribute("src"));
       videoUrls.push(video);
     }
-    Object.assign(lessons[i], { videoUrls: videoUrls });
+    const newLesson = { ...lessons[i] };
+    newLesson.videoUrls = videoUrls;
+    videoLesson.push(newLesson);
   }
-  return lessons;
+  return videoLesson;
 }
 
 (async () => {
@@ -105,9 +108,8 @@ async function getEachVideoLesson(browser, lessons) {
   await getCourses(page);
   const selected = await cliInput(courses);
   const lesson = await getEachLesson(browser, courses, selected);
-  const videoUrl = await getEachVideoLesson(browser, lesson);
-  // const batch = await downloader(lesson);
+  const videoLesson = await getEachVideoLesson(browser, lesson);
   await browser.close();
-  console.log(lesson);
-  console.log(videoUrl);
+  const batch = await downloader(videoLesson);
+  console.log(batch);
 })();
