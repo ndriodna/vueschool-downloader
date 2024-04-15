@@ -23,4 +23,10 @@ async function checkExist(path) {
     return false;
   }
 }
-export { starLine, check, checkExist };
+function clearScreen(readline) {
+  readline.cursorTo(process.stdout, 0, 0);
+
+  readline.clearScreenDown(process.stdout);
+}
+
+export { starLine, check, checkExist, clearScreen };
