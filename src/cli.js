@@ -1,6 +1,5 @@
 import readline from "node:readline";
-import { clear } from "node:console";
-import { starLine, check } from "./helper/helper.js";
+import { starLine, check, clearScreen } from "./helper/helper.js";
 
 function showOptions(option) {
   let horizontal = "";
@@ -23,14 +22,6 @@ function displayResult(selectedOptions, options) {
   selectedOptions.forEach((option, index) => {
     console.log(`${index + 1}. ${options[option].title}`);
   });
-}
-
-function clearScreen() {
-  clear();
-
-  readline.cursorTo(process.stdout, 0, 0);
-
-  readline.clearScreenDown(process.stdout);
 }
 
 export default function (options) {
@@ -60,7 +51,7 @@ export default function (options) {
           options[currentIndex].checked = true;
         }
 
-        clearScreen();
+        clearScreen(readline);
         showOptions(options);
         displayResult(selectedOptions, options);
       } else if (key.name === "down") {
@@ -75,18 +66,18 @@ export default function (options) {
           currentIndex = options.length - 1;
           options[currentIndex].checked = true;
         }
-        clearScreen();
+        clearScreen(readline);
         showOptions(options);
         displayResult(selectedOptions, options);
       } else if (key.name === "space") {
         if (!selectedOptions.includes(currentIndex)) {
           selectedOptions.push(currentIndex);
         }
-        clearScreen();
+        clearScreen(readline);
         showOptions(options);
         displayResult(selectedOptions, options);
       } else if (key.name === "return") {
-        clearScreen();
+        clearScreen(readline);
         displayResult(selectedOptions, options);
         // process.exit();
         process.stdin.pause();
