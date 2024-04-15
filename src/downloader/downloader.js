@@ -1,39 +1,51 @@
 import { execFile } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
-import { checkExist } from "../helper/helper.js";
+import { checkExist, clearScreen } from "../helper/helper.js";
+import readline from "node:readline";
 
-export default async function (lesson) {
-  const outputPath = "./output";
+export default async function (videosLesson) {
+  const outputPath = "output";
   const batchPath = "batch.txt";
   const listPath = [];
-  for (let i = 0; i < lesson.length; i++) {
-    const slugTitle = lesson[i].title.replace(/[ *]/g, "-");
+  for (let i = 0; i < videosLesson.length; i++) {
+    const slugTitle = videosLesson[i].title.replace(/[ *]/g, "-");
     const pathFile = `${outputPath}/${slugTitle}`;
     await mkdir(pathFile, { recursive: true });
     if (checkExist(pathFile)) {
       await writeFile(
         `${pathFile}/${batchPath}`,
-        String(lesson[i].urls).replace(/[,]/g, "\n")
+        String(videosLesson[i].videoUrls).replace(/[,]/g, "\n")
+      );
+      await writeFile(
+        `${pathFile}/output.json`,
+        JSON.stringify(videosLesson[i])
       );
       listPath.push(pathFile);
     }
   }
   for (let i = 0; i < listPath.length; i++) {
     if (checkExist(`${listPath[i]}/${batchPath}`)) {
-      execFile(
-        "yt-dlp.exe",
-        [
-          "--refer https://vueschool.io/",
-          `-a ${listPath[i]}/${batchPath}`,
-          `-P ${listPath[i]}`,
-        ],
-        (error, stdout) => {
-          if (error) {
-            throw error;
-          }
-          console.log(stdout);
-        }
-      );
+      const childProcess = execFile("./downloader/yt-dlp.exe", [
+        "--refer",
+        "https://vueschool.io/",
+        "--batch-file",
+        `${listPath[i]}/${batchPath}`,
+        "--paths",
+        listPath[i],
+      ]);
+      childProcess.stdout.on("data", (data) => {
+        clearScreen(readline);
+        console.log("log: ", data);
+      });
+      childProcess.stderr.on("data", (data) => {
+        console.log("log Err: ", data);
+      });
+      childProcess.on("error", (err) => {
+        console.log("Exec Error: ", err);
+      });
+      childProcess.on("close", (code) => {
+        console.log("exit with code: ", code);
+      });
     }
   }
 }
