@@ -5,8 +5,6 @@ import dotenv from "dotenv";
 import downloader from "./downloader/downloader.js";
 dotenv.config();
 
-const args = process.argv.slice(2);
-
 const courses = [];
 let cookies = null;
 
@@ -25,7 +23,7 @@ async function newPage(browser) {
 async function auth(page) {
   if (!existsSync("./cookies.txt")) {
     await page.goto("https://vueschool.io/login");
-    console.log("cookies not found trying login");
+    console.log("cookies not found trying to login");
     const emailFill = await page.$('input[type="text"]');
     await emailFill.type(process.env.USER_ID);
     const passwordFill = await page.$('input[type="password"]');
@@ -110,6 +108,6 @@ async function getEachVideoLesson(browser, lessons) {
   const lesson = await getEachLesson(browser, courses, selected);
   const videoLesson = await getEachVideoLesson(browser, lesson);
   await browser.close();
-  const batch = await downloader(videoLesson);
-  console.log(batch);
+  const downloadResult = await downloader(videoLesson);
+  console.log(downloadResult);
 })();
