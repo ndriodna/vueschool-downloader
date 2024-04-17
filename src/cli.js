@@ -4,9 +4,10 @@ import { starLine, check, clearScreen } from "./helper/helper.js";
 function showOptions(option) {
   let horizontal = "";
   starLine();
-  console.log(
-    "Gunakan panah Atas/Bawah, Space untuk memilih, Enter simpan pilihan"
-  );
+  console.log("Gunakan panah Atas/Bawah untuk berpindah");
+  console.log("Tekan Space untuk memilih course");
+  console.log("Tekan Enter untuk simpan pilihan dan melanjutkan scraping");
+  console.log("Tekan delete untuk hapus pilihan");
   starLine();
   option.forEach((option, i) => {
     horizontal += `[${option.checked ? check() : " "}] ${option.title} || `;
@@ -72,6 +73,13 @@ export default function (options) {
       } else if (key.name === "space") {
         if (!selectedOptions.includes(currentIndex)) {
           selectedOptions.push(currentIndex);
+        }
+        clearScreen(readline);
+        showOptions(options);
+        displayResult(selectedOptions, options);
+      } else if (key.name === "delete") {
+        if (selectedOptions.length > 0) {
+          selectedOptions.pop();
         }
         clearScreen(readline);
         showOptions(options);
