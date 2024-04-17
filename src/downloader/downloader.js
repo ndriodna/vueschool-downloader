@@ -43,9 +43,6 @@ export default async function (videosLesson) {
       childProcess.on("error", (err) => {
         console.log("Exec Error: ", err);
       });
-      childProcess.on("close", (code) => {
-        console.log("exit with code: ", code);
-      });
     }
   }
 }
