@@ -2,7 +2,7 @@
 
 # vue school downloader
 
-### scraping web use puppeter and yt-dlp for downloading video
+### scraping web use puppeter and yt-dlp
 
 ## Requirements
 
