@@ -8,6 +8,15 @@
 
 Node.js version >= 20.10 installed in your environement.
 
+## Authentication
+
+For user auth you can change .env.example to .env and edit the file
+
+```js
+USER_ID=input email here
+USER_PASS=input password here
+```
+
 ## Insall Dependecy
 
 ```console
