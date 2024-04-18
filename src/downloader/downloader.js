@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
-import { checkExist, clearScreen } from "../helper/helper.js";
+import { checkExist, clearScreen, colorText } from "../helper/helper.js";
 import readline from "node:readline";
 
 export default async function (videosLesson) {
@@ -38,10 +38,10 @@ export default async function (videosLesson) {
         console.log("log: ", data);
       });
       childProcess.stderr.on("data", (data) => {
-        console.log("log Err: ", data);
+        console.log(colorText(1, "log Err: " + data));
       });
       childProcess.on("error", (err) => {
-        console.log("Exec Error: ", err);
+        console.log(colorText(1, "Exec Error: " + err));
       });
     }
   }
