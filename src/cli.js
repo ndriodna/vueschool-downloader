@@ -1,16 +1,18 @@
 import readline from "node:readline";
-import { starLine, check, clearScreen } from "./helper/helper.js";
+import { starLine, colorText, clearScreen } from "./helper/helper.js";
 
 function showOptions(option) {
   let horizontal = "";
   starLine();
-  console.log("Arrow UP/DOWN to move");
-  console.log("'Space' for select course");
-  console.log("'Enter' submit selected courses");
-  console.log("'Delete' delete item");
+  console.log(colorText(5, "Arrow UP/DOWN to move"));
+  console.log(colorText(3, "'Space' for select course"));
+  console.log(colorText(2, "'Enter' submit selected courses"));
+  console.log(colorText(1, "'Delete' delete item"));
   starLine();
   option.forEach((option, i) => {
-    horizontal += `[${option.checked ? check() : " "}] ${option.title} || `;
+    horizontal += option.checked
+      ? `[${colorText(0)}] ${colorText(2, option.title)} || `
+      : `[ ] ${option.title} || `;
     if (i % 4 == 0 && i !== option.length - 1) {
       horizontal += "\n";
     }
@@ -19,7 +21,7 @@ function showOptions(option) {
 }
 
 function displayResult(selectedOptions, options) {
-  console.log("Pilihan Anda:");
+  console.log("Selected Course:");
   selectedOptions.forEach((option, index) => {
     console.log(`${index + 1}. ${options[option].title}`);
   });
@@ -87,7 +89,6 @@ export default function (options) {
       } else if (key.name === "return") {
         clearScreen(readline);
         displayResult(selectedOptions, options);
-        // process.exit();
         process.stdin.pause();
         process.stdin.removeAllListeners("keypress");
         resolve(selectedOptions);
