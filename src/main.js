@@ -3,6 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import cliInput from "./cli.js";
 import dotenv from "dotenv";
 import downloader from "./downloader/downloader.js";
+import createPath from "./downloader/createPath.js";
 dotenv.config();
 
 const courses = [];
@@ -85,12 +86,21 @@ async function getEachVideoLesson(browser, lessons) {
   for (let i = 0; i < lessons.length; i++) {
     const videoUrls = [];
     for (let j = 0; j < lessons[i].urls.length; j++) {
-      const page = await newPage(browser);
-      console.log("waiting for scraping video from: ", lessons[i].urls[j]);
-      await page.goto(lessons[i].urls[j], { waitUntil: "networkidle2" });
-      console.log("get url video from: ", lessons[i].urls[j]);
-      const video = await page.$eval("iframe", (e) => e.getAttribute("src"));
-      videoUrls.push(video);
+      const batch = lessons[i].urls.slice(j, j + 3)
+      const batchCourses = await Promise.all(batch.map(async (url) => {
+        try {
+          const page = await newPage(browser);
+          console.log("waiting for scraping video from: ", url);
+          await page.goto(url, { waitUntil: "networkidle2" });
+          console.log("get url video from: ", url);
+          const video = await page.$eval("iframe", (e) => e.getAttribute("src"));
+          return video
+        } catch (error) {
+          console.log(error)
+          return null
+        }
+      }))
+      videoUrls.push(batchCourses)
     }
     const newLesson = { ...lessons[i] };
     newLesson.videoUrls = videoUrls;
@@ -108,6 +118,7 @@ async function getEachVideoLesson(browser, lessons) {
   const lesson = await getEachLesson(browser, courses, selected);
   const videoLesson = await getEachVideoLesson(browser, lesson);
   await browser.close();
-  const downloadResult = await downloader(videoLesson);
+  const folderPath = await createPath(videoLesson)
+  const downloadResult = downloader(folderPath);
   console.log(downloadResult);
 })();
